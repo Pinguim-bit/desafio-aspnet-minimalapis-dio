@@ -1,5 +1,6 @@
 using GerenciadorDeVeiculos.Dominio.DTOs;
 using GerenciadorDeVeiculos.Dominio.Interfaces;
+using GerenciadorDeVeiculos.Dominio.ModelViews;
 using GerenciadorDeVeiculos.Dominio.Servicos;
 using GerenciadorDeVeiculos.Infraestrutura.Db;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IAdministradorServico, AdministradorServico>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DbContexto>(options =>
 {
@@ -19,7 +23,8 @@ builder.Services.AddDbContext<DbContexto>(options =>
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+
+app.MapGet("/", () => Results.Json(new Home()));
 
 app.MapPost("/login", ([FromBody] LoginDTO loginDTO, IAdministradorServico administradorServico ) =>
 {
@@ -32,5 +37,8 @@ app.MapPost("/login", ([FromBody] LoginDTO loginDTO, IAdministradorServico admin
         return Results.Unauthorized();
     }
 });
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();
